@@ -1,0 +1,32 @@
+- name: NGINX | Adding NGINX signing key
+  apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
+ 
+- name: NGINX | Adding sources.list deb url for NGINX
+  lineinfile: dest=/etc/apt/sources.list line="deb http://nginx.org/packages/mainline/ubuntu/ trusty nginx"
+ 
+- name: NGINX Plus | Adding sources.list deb-src url for NGINX
+  lineinfile: dest=/etc/apt/sources.list line="deb-src http://nginx.org/packages/mainline/ubuntu/ trusty nginx"
+ 
+- name: NGINX | Updating apt cache
+  apt:
+    update_cache: yes
+ 
+- name: NGINX | Installing NGINX
+  apt:
+    pkg: nginx
+    state: latest
+ 
+- name: NGINX | Starting NGINX
+  service:
+    name: nginx
+    state: started
+
+- name: Create directory for virtualhost
+  file: dest=/srv/{{ server_name }} state=directory
+
+- name: Copy virtualhost config
+  template: src=default.conf dest=/etc/nginx/conf.d/{{ server_name }}.conf
+
+- name: Copy index.html
+  template: src=index.html dest=/srv/{{ server_name}}/index.html
+  notify: restart nginx

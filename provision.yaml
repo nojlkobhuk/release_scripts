@@ -1,0 +1,27 @@
+  - hosts: localhost
+    connection: local
+    gather_facts: no
+    roles:
+      - role: provision
+        name: "{{ group_name }}frontend"
+
+  - hosts: "dev0frontend"
+    become: True
+    become_user: root
+    become_method: sudo
+    roles:
+      - frontend
+
+  - hosts: localhost
+    connection: local
+    gather_facts: no
+    roles:
+      - role: provision
+        name: "{{ group_name }}backend"
+
+  - hosts: "dev0backend"
+    become: True
+    become_user: root
+    become_method: sudo
+    roles:
+      - backend
